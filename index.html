@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trading Calculator</title>
+    <!-- AdminLTE CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css"
+    />
+    <!-- Bootstrap and Font Awesome (for icons) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      <section class="content">
+        <div class="container-fluid mt-5">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Trading Calculator</h3>
+            </div>
+            <div class="card-body">
+              <form id="calculatorForm">
+                <div class="form-group">
+                  <label for="initialAmount">Initial Amount</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="initialAmount"
+                    placeholder="Enter initial amount"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="riskForInitialAmount">Risk Percentage</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="riskForInitialAmount"
+                    placeholder="Enter risk percentage"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="currentCoinPrice">Current Coin Price</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="currentCoinPrice"
+                    placeholder="Enter current coin price"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="coinTpPercentage">Take Profit Percentage</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="coinTpPercentage"
+                    placeholder="Enter TP percentage"
+                  />
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onclick="calculate()"
+                >
+                  Calculate
+                </button>
+              </form>
+            </div>
+            <div class="card-footer">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Initial Amount</th>
+                    <th>Risk %</th>
+                    <th>Current Coin Price</th>
+                    <th>TP %</th>
+                    <th>TP</th>
+                    <th>SL</th>
+                    <th>Profit</th>
+                    <th>Loss</th>
+                    <th>Leverage</th>
+                  </tr>
+                </thead>
+                <tbody id="resultTable">
+                  <tr>
+                    <td colspan="9" class="text-center">No data available</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- AdminLTE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+    <script>
+      function calculateTargetPrice(price, tpPercentage) {
+        return price + price * (tpPercentage / 100);
+      }
+
+      function calculateStopLoss(price, riskPercentage) {
+        return price - price * (riskPercentage / 100);
+      }
+
+      function percentageAfter(initial, convertPercentage) {
+        return initial * (convertPercentage / 100);
+      }
+
+      function calculate() {
+        const initialAmount = parseFloat(
+          document.getElementById("initialAmount").value
+        );
+        const riskForInitialAmount = parseFloat(
+          document.getElementById("riskForInitialAmount").value
+        );
+        const currentCoinPrice = parseFloat(
+          document.getElementById("currentCoinPrice").value
+        );
+        const coinTpPercentage = parseFloat(
+          document.getElementById("coinTpPercentage").value
+        );
+
+        const tp = calculateTargetPrice(currentCoinPrice, coinTpPercentage);
+        const sl = calculateStopLoss(currentCoinPrice, coinTpPercentage);
+        const potentialProfit = percentageAfter(
+          initialAmount,
+          riskForInitialAmount
+        );
+        const potentialLoss = percentageAfter(
+          initialAmount,
+          riskForInitialAmount
+        );
+        const leverage =
+          potentialProfit / (coinTpPercentage / 100) / initialAmount;
+
+        // Update the table with calculated results
+        document.getElementById("resultTable").innerHTML = `
+            <tr>
+                <td>${initialAmount.toFixed(2)}</td>
+                <td>${riskForInitialAmount.toFixed(2)}</td>
+                <td>${currentCoinPrice.toFixed(2)}</td>
+                <td>${coinTpPercentage.toFixed(2)}</td>
+                <td>${tp.toFixed(2)}</td>
+                <td>${sl.toFixed(2)}</td>
+                <td>${potentialProfit.toFixed(2)}</td>
+                <td>${potentialLoss.toFixed(2)}</td>
+                <td>${leverage.toFixed(2)}</td>
+            </tr>
+        `;
+      }
+    </script>
+  </body>
+</html>
